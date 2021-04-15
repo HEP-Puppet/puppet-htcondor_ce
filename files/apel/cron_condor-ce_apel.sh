@@ -11,4 +11,4 @@
 /usr/share/condor-ce/condor_batch.sh      # Make the batch file (batch system job run times)
 /usr/bin/apelparser                # Read the blah and batch files in
 /usr/bin/apelclient                # Join blah and batch records to make job records
-/usr/bin/ssmsend                   # Send job records into APEL system (already run as part of apelclient)
+/usr/bin/ssmsend                   # Send job records into APEL system
