@@ -1,4 +1,9 @@
 ################################################################################
+[sender]
+# Either 'STOMP' for STOMP message brokers or 'AMS' for Argo Messaging Service
+protocol: AMS
+
+################################################################################
 # Required: broker configuration options
 #
 
@@ -6,11 +11,12 @@
 
 # The SSM will query a BDII to find brokers available.  These details are for the
 # EGI production broker network
-bdii: ldap://lcg-bdii.cern.ch:2170
-network: PROD
+# bdii: ldap://lcg-bdii.cern.ch:2170
+# network: PROD
 # OR (these details will only be used if the broker network settings aren't used)
 # host: test-msg02.afroditi.hellasgrid.gr
 # port: 6163
+host: msg.argo.grnet.gr
 
 # broker authentication.  If use_ssl is set, the certificates configured
 # in the mandatory [certificates] section will be used.
@@ -34,13 +40,11 @@ capath: /etc/grid-security/certificates
 # Messaging configuration.
 #
 [messaging]
+# If using AMS this is the project that SSM will connect to. Ignored for STOMP.
+ams_project: accounting
 
 # Queue to which SSM will send messages
-<% if @apel_use_test_queue %>
-destination: /queue/global.accounting.test.cpu.central
-<% else %>
-destination: /queue/global.accounting.cpu.central
-<% end -%>
+destination: gLite-APEL
 
 # Outgoing messages will be read and removed from this directory.
 path: /var/spool/apel/outgoing

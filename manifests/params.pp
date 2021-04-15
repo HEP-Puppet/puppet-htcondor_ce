@@ -39,7 +39,7 @@ class htcondor_ce::params {
   $apel_mysql_db       = 'apel'
   $apel_mysql_user     = 'apelclient'
   $apel_mysql_password = 'apel12345'
-  $apel_use_test_queue = false
+  $apel_enable_ssm     = false
 
   $job_routes = {
     'default_route' => {
