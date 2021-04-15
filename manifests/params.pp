@@ -23,4 +23,32 @@ class htcondor_ce::params {
   $execution_env_cores = 16
   $election_type       = 'leader'
   $election_hosts      = $::fqdn
+
+  # cert parameters
+  $hostcert_location   = '/root/hostcert.pem'
+  $hostkey_location    = '/root/hostkey.pem'
+
+  # accounting parameters
+  $install_apel        = true
+  $apel_ce_config      = '/etc/condor-ce/config.d/51-ce-apel.conf'
+  $apel_condor_config  = '/etc/condor/config.d/51-condor-apel.conf'
+  $apel_output_dir     = '/var/lib/condor-ce/apel/'
+  $apel_scaling_attr   = 'RalScaling'
+
+  $apel_mysql_root_pw  = '12345'
+  $apel_mysql_db       = 'apel'
+  $apel_mysql_user     = 'apelclient'
+  $apel_mysql_password = 'apel12345'
+  $apel_enable_ssm     = false
+
+  $job_routes = {
+    'default_route' => {
+      'TargetUniverse' => 5,
+      'eval_set_AccountingGroup' => 'strcat("group_u_", x509userproxyvoname, ".", Owner)',
+      'delete_SUBMIT_Iwd' => true,
+      'set_WantIOProxy' => true,
+      'set_default_maxMemory' => 3000
+      }
+  }
+  $job_routes_base_settings = {}
 }

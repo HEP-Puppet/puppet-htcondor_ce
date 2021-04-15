@@ -20,29 +20,39 @@ class htcondor_ce::auth::argus {
   validate_integer($argus_port)
   validate_string($argus_resourceid)
 
-  package { 'argus-pep-api-c': ensure => present, }
-
-  package { 'argus-gsi-pep-callout':
-    ensure  => present,
-    require => Package['argus-pep-api-c'],
+  $argus_packages = [
+    'argus-gsi-pep-callout',
+    'lcas-plugins-basic',
+    'lcas-plugins-voms',
+    'lcmaps-plugins-basic',
+    'lcmaps-plugins-c-pep',
+    'lcmaps-plugins-verify-proxy',
+    'lcmaps-plugins-voms',
+  ]
+  package { $argus_packages:
+    ensure          => present,
+    install_options => ['--enablerepo', 'epel,wlcg,UMD-4-base,UMD-4-updates']
   }
-
-  file { $pep_callout:
+  -> file { $pep_callout:
     ensure  => file,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
     content => template("${module_name}/gsi-pep-callout.erb"),
     require => Package['argus-gsi-pep-callout'],
-  }
-
-  file { $gsi_authz:
+  } -> file { $gsi_authz:
     ensure  => file,
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
     source  => "puppet:///modules/${module_name}/gsi-authz.conf",
     require => Package['argus-gsi-pep-callout'],
+  } -> file{ '/etc/lcmaps/lcmaps.db':
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0644',
+    content => template("${module_name}/lcmaps.db.erb"),
+    require => Package['argus-gsi-pep-callout'],
   }
-
 }

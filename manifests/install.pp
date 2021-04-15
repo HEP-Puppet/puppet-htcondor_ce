@@ -9,21 +9,47 @@ class htcondor_ce::install {
   $lrms              = $::htcondor_ce::lrms
   $lrms_version      = $::htcondor_ce::lrms_version
   $use_static_shadow = $::htcondor_ce::use_static_shadow
+  $install_apel      = $::htcondor_ce::install_apel
   $install_bdii      = $::htcondor_ce::install_bdii
+  $condor_view_hosts = $::htcondor_ce::condor_view_hosts
 
-  package { ['globus-rsl', 'blahp', 'empty-ca-certs']: ensure => present, }
+  include htcondor_ce::install::repositories
+
+  package { ['globus-rsl']: ensure => present, }
 
   package { ['htcondor-ce', 'htcondor-ce-client', "htcondor-ce-${lrms}"]:
-    ensure  => $ce_version,
-    require => Package['condor', 'blahp', 'globus-rsl', 'empty-ca-certs'],
+    ensure          => $ce_version,
+    install_options => ['--enablerepo', 'epel,wlcg,htcondor-development'],
   }
 
   if $install_bdii {
-    package { 'htcondor-ce-bdii': ensure => $ce_version, }
+    package { 'htcondor-ce-bdii':
+      ensure          => $ce_version,
+      install_options => ['--enablerepo', 'epel,wlcg,htcondor-development'],
+    }
+  }
+
+  if $install_apel {
+    $apel_packages = ['apel-client', 'apel-parsers', 'htcondor-ce-apel']
+
+    package{$apel_packages:
+      ensure=> present,
+      install_options => ['--enablerepo', 'epel,UMD-4-updates,htcondor-development']
+    }
   }
 
   if $use_static_shadow {
     package { 'condor-static-shadow': ensure => $lrms_version, }
   }
+
+  if !empty($condor_view_hosts) and member($condor_view_hosts, $::fqdn) {
+    package {'htcondor-ce-view':
+      ensure          => present,
+      install_options => ['--enablerepo', 'epel,wlcg,htcondor-development'],
+    }
+  }
+
+
+
 
 }
